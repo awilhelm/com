@@ -1,5 +1,5 @@
 /// \file
-/// example.x, example.h et example.cc montrent comment utiliser Libcom pour définir un protocole de communication.
+/// example.h et example.cc montrent comment utiliser Libcom pour définir un protocole de communication.
 
 #include <boost/serialization/vector.hpp>
 

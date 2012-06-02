@@ -17,29 +17,34 @@
 
 #include "com.h"
 
-#undef PROTOCOL
-#define PROTOCOL(sender, receiver, messages)\
+#define DEFINE_PROTOCOL_AUX(args)\
+DEFINE_PROTOCOL(args)
+
+#define DEFINE_PROTOCOL(sender, receiver, messages)\
 struct sender {\
 	explicit sender(com::Socket &);\
 	com::Socket &_socket;\
 	messages\
 };\
 
-#undef MESSAGE
 #define MESSAGE(name, a1, a2)\
 void name a1;\
 
-#include PROTOCOL_FILE
+DEFINE_PROTOCOL_AUX(PROTOCOL)
 
-#undef PROTOCOL
-#define PROTOCOL(sender, receiver, messages)\
+#undef DEFINE_PROTOCOL
+#undef MESSAGE
+
+#define DEFINE_PROTOCOL(sender, receiver, messages)\
 struct receiver: com::Receiver {\
 	explicit receiver(com::Socket &);\
 	messages\
 };\
 
-#undef MESSAGE
 #define MESSAGE(name, a1, a2)\
 void name(const boost::function<void a1> &);\
 
-#include PROTOCOL_FILE
+DEFINE_PROTOCOL_AUX(PROTOCOL)
+
+#undef DEFINE_PROTOCOL
+#undef MESSAGE

@@ -17,27 +17,26 @@
 
 #include "com.hh"
 
-#undef PROTOCOL
-#define PROTOCOL(sender, receiver, messages)\
+#define DEFINE_PROTOCOL(sender, receiver, ...)\
 enum {\
-	messages\
+	__VA_ARGS__\
 };\
 
-#undef MESSAGE
 #define MESSAGE(name, a1, a2)\
 name##_,\
 
-#include PROTOCOL_FILE
+DEFINE_PROTOCOL_AUX(PROTOCOL)
 
-#undef PROTOCOL
-#define PROTOCOL(sender, receiver, messages)\
+#undef DEFINE_PROTOCOL
+#undef MESSAGE
+
+#define DEFINE_PROTOCOL(sender, receiver, messages)\
 sender::sender(com::Socket &socket): _socket(socket) {}\
 receiver::receiver(com::Socket &socket): Receiver(socket) {}\
 typedef sender _sender;\
 typedef receiver _receiver;\
 messages\
 
-#undef MESSAGE
 #define MESSAGE(name, a1, a2)\
 \
 void _sender::name a1\
@@ -50,4 +49,7 @@ void _receiver::name(const boost::function<void a1> &function)\
 	_callback[name##_] = boost::bind(com::receive_aux<void a1>, function, _1);\
 }\
 
-#include PROTOCOL_FILE
+DEFINE_PROTOCOL_AUX(PROTOCOL)
+
+#undef DEFINE_PROTOCOL
+#undef MESSAGE
