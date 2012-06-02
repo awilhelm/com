@@ -71,6 +71,8 @@ private:
 	const uint32_t type;
 };
 
+BOOST_PP_REPEAT_FROM_TO(1, MAX_PARAMS, DEFINE_WORKER, ());
+
 template<class T> void
 receive_aux(const boost::function<T> &callback, const std::string &data)
 {
@@ -78,6 +80,5 @@ receive_aux(const boost::function<T> &callback, const std::string &data)
 }
 
 template<> void receive_aux<void(void)>(const boost::function<void(void)> &, const std::string &);
-BOOST_PP_REPEAT_FROM_TO(1, MAX_PARAMS, DEFINE_WORKER, ());
 
 }

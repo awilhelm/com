@@ -20,6 +20,10 @@
 
 #include "com.hh"
 
+#if BOOST_VERSION < 104400
+#define system_category() system_category
+#endif
+
 using boost::asio::ip::tcp;
 
 namespace com {
@@ -82,7 +86,7 @@ try_read(tcp::socket &socket, const Buffer &buffer, const boost::posix_time::tim
 	}
 	if(*read_result)
 	{
-		static const boost::system::error_code e(boost::system::errc::operation_canceled, boost::system::system_category);
+		static const boost::system::error_code e(boost::system::errc::operation_canceled, boost::system::system_category());
 		if(*read_result == e)
 		{
 			return false;
