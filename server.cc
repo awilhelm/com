@@ -39,6 +39,12 @@ receive_list(const std::vector<std::string> &v)
 	std::cout << std::endl;
 }
 
+void
+receive_custom(const CustomType &v)
+{
+	std::cerr << __func__ << " x:" << v.x << " y:" << v.y << " z:" << v.z << std::endl;
+}
+
 /// Fonction appelée chaque fois qu'un client ouvre une connexion.
 /// \param socket La socket qui permet de communiquer avec le client.
 static void
@@ -52,6 +58,7 @@ run(com::Socket &socket)
 	receive.numbers(receive_numbers);
 	receive.text(receive_text);
 	receive.list(receive_list);
+	receive.custom(receive_custom);
 
 	for(;;)
 	{

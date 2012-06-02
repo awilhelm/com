@@ -20,6 +20,7 @@ run(com::Socket &socket)
 		send.numbers(3, 2.5f);
 		send.text("hello world");
 		send.list(std::vector<std::string>(3, "hello"));
+		send.custom(CustomType(1, 2, 3));
 
 		// Attend une seconde avant d'envoyer le prochain message.
 		boost::this_thread::sleep(boost::posix_time::seconds(1));
