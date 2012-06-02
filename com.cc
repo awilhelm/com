@@ -138,14 +138,24 @@ open(uint16_t port, const boost::function<void(tcp::socket &)> &callback, const 
 {
 	boost::asio::io_service service;
 	tcp::acceptor acceptor(service, tcp::endpoint(tcp::v4(), port));
-	for(;;)
+	boost::thread_group threads;
+	try
 	{
-		const boost::shared_ptr<boost::asio::io_service> new_service(new boost::asio::io_service);
-		const boost::shared_ptr<tcp::socket> socket(new tcp::socket(*new_service));
-		if(try_accept(acceptor, *socket, timeout))
+		for(;;)
 		{
-			boost::thread(boost::bind(open_server, callback, new_service, socket));
+			const boost::shared_ptr<boost::asio::io_service> new_service(new boost::asio::io_service);
+			const boost::shared_ptr<tcp::socket> socket(new tcp::socket(*new_service));
+			if(try_accept(acceptor, *socket, timeout))
+			{
+				threads.create_thread(boost::bind(open_server, callback, new_service, socket));
+			}
+			boost::this_thread::interruption_point();
 		}
+	}
+	catch(const boost::thread_interrupted &)
+	{
+		threads.interrupt_all();
+		threads.join_all();
 	}
 }
 
@@ -195,6 +205,7 @@ Receiver::operator()(const boost::posix_time::time_duration &timeout) const
 			p->second(std::string(data, size));
 		}
 	}
+	boost::this_thread::interruption_point();
 }
 
 template<> void
